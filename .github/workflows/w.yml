@@ -1,0 +1,16 @@
+name: w1
+on:
+  workflow_dispatch:
+env:
+  GODOT_VERSION: 4.7.2
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache export templates
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates
+          key: godot-templates-${{ env.GODOT_VERSION }}
+      - run: echo hello
