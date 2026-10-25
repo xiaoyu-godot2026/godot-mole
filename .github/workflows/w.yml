@@ -20,3 +20,24 @@ jobs:
           path: ~/.local/share/godot/export_templates
           key: godot-templates-${{ env.GODOT_VERSION }}
 
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        run: |
+          set -euxo pipefail
+          BASE="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl -fsSL -o "$RUNNER_TEMP/godot.zip" "$BASE/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP"/godot/Godot_v*
+          echo "GODOT_BIN=$(ls "$RUNNER_TEMP"/godot/Godot_v*)" >> "$GITHUB_ENV"
+
+          TPL_DIR="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          if [ ! -f "$TPL_DIR/android_debug.apk" ]; then
+            curl -fsSL -o "$RUNNER_TEMP/templates.tpz" "$BASE/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+            rm -rf "$RUNNER_TEMP/tpl"
+            unzip -q "$RUNNER_TEMP/templates.tpz" -d "$RUNNER_TEMP/tpl"
+            mkdir -p "$(dirname "$TPL_DIR")"
+            rm -rf "$TPL_DIR"
+            mv "$RUNNER_TEMP/tpl/templates" "$TPL_DIR"
+          fi
+          ls -la "$TPL_DIR" | head -30
+
