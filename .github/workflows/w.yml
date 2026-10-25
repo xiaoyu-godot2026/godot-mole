@@ -68,3 +68,8 @@ EOF
             export_presets.cfg
           grep -n "keystore/debug" export_presets.cfg || true
 
+      - name: Import project
+        run: |
+          set -euxo pipefail
+          "$GODOT_BIN" --headless --path . --import || true
+
